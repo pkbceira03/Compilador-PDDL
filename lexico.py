@@ -7,8 +7,6 @@ digitos = r"\[0-9]*"
 letras_digitos = letra + digitos
 
 #lista de palavras reservadas
-#acho que o problem entra em outra categario pois não começa com o:
-#no arquivo de Domain (onde colocamos as ações) a palavra domain não começa com o : mas no outro arquivo começa com :
 palavras_reservadas = [
     'domain', 'requirements', 'types','predicates',
     'action', 'parameters','precondition', 'effect', 
@@ -33,6 +31,9 @@ simbolos = [
     '-', ':',';'
 ]
 
+#espaco
+espaco = [" ","\n","\t","\r"]
+
 #tokens
 DELEMITADOR = []
 SIMBOLO =[]
@@ -42,6 +43,7 @@ COMENTARIO = []
 VARIAVEL = []
 CONSTANTE = []
 FUNCAO = []
+TIPO = []
 
 #armazena todos os tokens
 token = []
@@ -67,7 +69,7 @@ def lexico(codigo):
             comentario.append(codigo[posicao_aux])
             posicao_aux += 1
 
-        print(f"Conteudo do comentario -> {comentario}")
+        #print(f"Conteudo do comentario -> {comentario}")
         COMENTARIO.append(codigo[posicao:posicao_aux])
         token.append(f"COMENTARIO = {COMENTARIO}")
         posicao = posicao_aux
@@ -83,10 +85,67 @@ def lexico(codigo):
 
     #percorre o arquivo inteiro  
     while posicao < len(codigo):
+        palavra = ""
+        #print(proximo(posicao))
+        #ignora os espaço em brando
+        while proximo(posicao) in espaco:
+            posicao += 1
+
+        #tira comentarios
         if proximo(posicao) == ';':
             posicao = tira_comentario(posicao)
+            posicao += 1
             continue
-        posicao += 1
+        elif proximo(posicao) in delimitador:
+            #encontra os delimitadores
+            DELEMITADOR.append(proximo(posicao))
+            token.append(f"DELIMITATOR = {proximo(posicao)}")
+            #print(proximo(posicao))
+            posicao += 1
+        elif proximo(posicao) in simbolos:
+            simbolo_aux = proximo(posicao)
+            #print(simbolo_aux)
+            if simbolo_aux == ':':
+                #token do simbolo
+                SIMBOLO.append(proximo(posicao))
+                token.append(f"SIMBOLO = {proximo(posicao)}")
+
+                # os proximos caracteres são uma palavra chave
+                posicao += 1
+                while proximo(posicao) not in espaco:
+                    palavra += proximo(posicao)
+                    posicao += 1
+                #print(palavra)
+                #coloca palavra no token e zera a variável
+                PALAVRAS_RESERVADAS.append(palavra)
+                token.append(f"PALAVRA_RESERVADA = {palavra}")
+                #print(proximo(posicao))
+                posicao += 1
+                palavra=""
+                
+            elif simbolo_aux == '-':
+                # é uma atribuição de variavel
+                if proximo(posicao+1) == ' ':
+                    posicao += 2
+                    while proximo(posicao) not in espaco and proximo(posicao) not in delimitador:
+                        palavra += proximo(posicao)
+                        posicao +=1
+
+                    print(palavra)
+                    TIPO.append(palavra)
+                    token.append(f"TIPO_VARIAVEL = {palavra}")
+                    palavra = ""
+                    posicao += 1
+                else:
+                    posicao += 1
+
+        elif proximo(posicao) in letra:
+            #print('letra')
+            posicao += 1
+        else:
+            posicao+=1
+                
+        
 
 caminho = os.path.abspath("problem.pddl")
 print (caminho)
@@ -95,4 +154,14 @@ with open('/home/pedro/unb/Compiladores/Trabalho/Compilador-PDDL/problem.pddl', 
     codigo = file.read()    
 
 lexico(codigo)
+# print('comentario')
+# print(COMENTARIO)
+# print('delimitador')
+# print(DELEMITADOR)
+# print('palavras reservadas')
+# print(PALAVRAS_RESERVADAS)
+print('tipo')
+print(TIPO)
+# print('token')
+# print(token)
 
