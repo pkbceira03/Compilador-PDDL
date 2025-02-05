@@ -158,13 +158,12 @@ def lexico(codigo):
             posicao += 1
             if proximo(posicao) in digitos:
                 palavra += proximo(posicao-1)
-                while proximo(posicao) not in espaco:
+                while proximo(posicao) not in espaco and proximo(posicao) not in delimitador:
                     palavra += proximo(posicao)
                     aux_variavel += proximo(posicao)
                     posicao += 1
                 NAO_RECONHECE.append(palavra)
                 token.append(f"NAO_RECONHECE = {palavra}")
-                posicao += 1
                 palavra = ''
             else:
                 while proximo(posicao) not in espaco and proximo(posicao) in letra_digitos:
@@ -172,13 +171,10 @@ def lexico(codigo):
                     aux_variavel += proximo(posicao)
                     posicao += 1
 
-                IDENTIFICADOR.append(palavra)
                 VARIAVEL.append(aux_variavel)
-                token.append(f"IDENTIFICADOR = {palavra}")
                 token.append(f"VARIAVEL = {aux_variavel}")
                 palavra = ''
                 aux_variavel = ''
-                posicao += 1
             
         elif proximo(posicao) in letra:
             palavra += proximo(posicao)
@@ -270,7 +266,7 @@ lexico(codigo2)
 print('KEYWORD: ',len(PALAVRAS_RESERVADAS))
 #print(PALAVRAS_RESERVADAS)
 print('IDENTIFIER: ',len(IDENTIFICADOR))
-print(IDENTIFICADOR)
+#print(IDENTIFICADOR)
 print('VARIABLES: ',len(VARIAVEL))
 #print(VARIAVEL)
 print('NUMBER: ',len(NUMERO))
@@ -290,7 +286,7 @@ print('TEMPORAL_OPERATOR: ',len(OPERADORES_TEMPORAIS))
 print('OPTIMIZATION_OPERATOR: ',len(OPERADORES_DE_OTIMIZACAO))
 #print(OPERADORES_DE_OTIMIZACAO)
 print('DELIMITER: ',len(DELEMITADOR))
-# print(DELEMITADOR)
+#print(DELEMITADOR)
 print('COMMENTS: ',len(COMENTARIO))
 #print(COMENTARIO)
 print('UNKNOWN: ',len(NAO_RECONHECE))
