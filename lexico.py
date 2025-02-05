@@ -15,27 +15,57 @@ letra_digitos = letra + digitos
 
 #lista de palavras reservadas
 palavras_reservadas = [
-    'domain', 'requirements', 'types','predicates',
-    'action', 'parameters','precondition', 'effect', 
-    'init', 'functions','problem', 'objects', 
-    'define', 'goal','derived', 'extends', 'constants',
-    'timeless', 'axiom', 'context', 'implies'
+    "define", "domain", "requirements", "types", 
+    "constants", "predicates", "functions", "constraints", 
+    "action" "parameters", "precondition", "effect", 
+    "durative-action", "duration", "condition", "derived", 
+    "problem", "objects", "init", "goal", "metric", 
+    "total-time", "lenght", "serial", "parallel"
 ]
 
 #operadores
-operadores = [
-    'and', 'forAll', 'when', 'not', 'or',
-    'increse','imply'
+#logicos
+logicos = [
+    'and', 'or', 'not', 'imply'
+]
+#aritmeticas
+aritmeticas = [
+    '+', '-', '*', '/', '<', '>', '=', '<=', '>='
+]
+
+#qualificador
+quantificador = [
+    'forall', 'exists'
+]
+
+#condicional
+condicional = [
+    'when'
+]
+
+#modificador
+modificador = [
+    'assign', 'scale-up', 'scale-down', 'increase', 'decrease'
+]
+
+#temporal
+temporal = [
+    'at', 'over', 'start', 'end'
+]
+
+#otimizacao
+otimizacao = [
+    'minimize', 'maximize'
 ]
 
 #delimitador
 delimitador = [
-    '(',')'
+    '(',')', ':'
 ]
 
 #simbolos
 simbolos = [
-    '-', ':',';','?'
+    '-',';','?'
 ]
 
 #Caracteres aceitos
@@ -43,19 +73,20 @@ caracter = digitos + delimitador + simbolos
 
 #espaco
 espaco = [" ","\n","\t","\r"]
-
 #tokens
-DELEMITADOR = []
-PALAVRAS_RESERVADAS = []
-COMENTARIO = []
-TIPO = []
-SIMBOLO =[]
-VARIAVEL = []
-CONSTANTE = []
-ERROR = []
-OPERADORES = []
-
-FUNCAO = []
+DELEMITADOR = [] #delimiter
+PALAVRAS_RESERVADAS = [] #heyword
+COMENTARIO = [] #comment
+NUMERO = [] #number
+IDENTIFICADOR = [] #identifier
+VARIAVEL = [] #varialvel ? + identificador
+OPERADORES_LOGICO = [] #logical operator
+OPERADORES_ARITMETICO = [] #arithmetic logical 
+OPERADORES_QUANTIFICADORES = [] #quantifier operator
+OPERADORES_CONDICIONAIS = [] #conditional operator
+OPERADORES_DE_MODIFICACAO = [] #modifier operator
+OPERADORES_TEMPORAIS = [] #temporal operador 
+OPERADORES_DE_OTIMIZACAO = [] #optimization operator
 
 
 #armazena todos os tokens
@@ -118,80 +149,6 @@ def lexico(codigo):
             token.append(f"DELIMITATOR = {proximo(posicao)}")
             #print(proximo(posicao))
             posicao += 1
-        elif proximo(posicao) in simbolos:
-            simbolo_aux = proximo(posicao)
-            #print(simbolo_aux)
-            if simbolo_aux == ':':
-                #token do simbolo
-                SIMBOLO.append(proximo(posicao))
-                token.append(f"SIMBOLO = {proximo(posicao)}")
-
-                # os proximos caracteres são uma palavra chave
-                posicao += 1
-                while proximo(posicao) not in espaco and proximo(posicao) not in delimitador:
-                    palavra += proximo(posicao)
-                    posicao += 1
-                #print(palavra)
-                #coloca palavra no token e zera a variável
-                PALAVRAS_RESERVADAS.append(palavra)
-                token.append(f"PALAVRA_RESERVADA = {palavra}")
-                #print(proximo(posicao))
-                posicao += 1
-                palavra=""
-                
-            elif simbolo_aux == '-':
-                # é uma atribuição de variavel
-                SIMBOLO.append(proximo(posicao))
-                token.append(f"SIMBOLO = {proximo(posicao)}")
-                if proximo(posicao+1) == ' ':
-                    posicao += 2
-                    while proximo(posicao) not in espaco and proximo(posicao) not in delimitador:
-                        palavra += proximo(posicao)
-                        posicao +=1
-
-                    #print(palavra)
-                    TIPO.append(palavra)
-                    token.append(f"TIPO_VARIAVEL = {palavra}")
-                    palavra = ""
-                    posicao += 1
-                else:
-                    posicao += 1
-        elif proximo(posicao) in letra:
-            #print('letra')
-            aux_caracter = proximo(posicao)
-            aux_posicao = posicao
-            #print(aux_posicao)
-            palavra += aux_caracter
-            posicao += 1
-            while proximo(posicao) not in espaco and proximo(posicao) not in delimitador:
-                palavra += proximo(posicao)
-                if proximo(posicao) not in caracter:
-                    ERROR.append(proximo(posicao))
-                    token.append(f"ERROR na linha {linha} {proximo(posicao)}")
-                posicao += 1
-
-            if palavra in PALAVRAS_RESERVADAS:
-                PALAVRAS_RESERVADAS.append(palavra)
-                token.append(f"PALAVRA_RESERVADA = {palavra}")
-                # print('reservada')
-                # print(palavra)
-            elif palavra in operadores:
-                OPERADORES.append(palavra)
-                token.append(f"Operador = {palavra}")
-            elif proximo(aux_posicao-1) == "(" and palavra not in PALAVRAS_RESERVADAS:
-                # print('const')
-                # print(palavra)
-                CONSTANTE.append(palavra)
-                token.append(f"CONSTANTE = {palavra}")
-            elif proximo(posicao) == '?':
-                VARIAVEL.append(palavra)
-                token.append(f"VARIAVEL = {palavra}")
-            else:
-                # print('variavel')
-                # print(palavra)
-                VARIAVEL.append(palavra)
-                token.append(f"VARIAVEL = {palavra}")
-            palavra=""
         else:
             # print('pula')
             # print(proximo(posicao))
@@ -208,21 +165,11 @@ with open('/home/pedro/unb/Compiladores/Trabalho/Compilador-PDDL/domain.pddl', m
 lexico(codigo)
 
 print('comentario')
+print(len(COMENTARIO))
 print(COMENTARIO)
 print('delimitador')
-print(DELEMITADOR)
-print('palavras reservadas')
-print(PALAVRAS_RESERVADAS)
-print('tipo')
-print(TIPO)
-print('Constante')
-print(CONSTANTE)
-print('variavel')
-print(VARIAVEL)
-print('simbolo')
-print(SIMBOLO)
-print('operador')
-print(OPERADORES)
+print(len(DELEMITADOR))
+
 
 
 # print('token')
