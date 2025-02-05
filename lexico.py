@@ -60,7 +60,7 @@ otimizacao = [
 
 #delimitador
 delimitador = [
-    '(',')'
+    '(',')',':'
 ]
 
 #espaco
@@ -137,8 +137,12 @@ def lexico(codigo):
             while proximo(posicao) is not None and proximo(posicao) not in espaco and (proximo(posicao) in letra_digitos or proximo(posicao) == '-'):
                 palavra += proximo(posicao)
                 posicao += 1
-            PALAVRAS_RESERVADAS.append(palavra)
-            token.append(f"PALAVRA_RESERVADA = {palavra}")
+            if palavra in palavras_reservadas:
+                PALAVRAS_RESERVADAS.append(palavra)
+                token.append(f"PALAVRA_RESERVADA = {palavra}")
+            else:
+                IDENTIFICADOR.append(palavra)
+                token.append(f"IDENTIFICADOR = {palavra}")
             palavra =''
             
         elif proximo(posicao) in delimitador:
@@ -231,7 +235,8 @@ def lexico(codigo):
                 token.append(f"NUMERO = {palavra}")
             palavra = ''
             
-
+        elif proximo(posicao) == None:
+            posicao += 1
         else:
             #print('pula')
             #print(proximo(posicao))
@@ -263,9 +268,9 @@ lexico(codigo2)
 ##python3 lexico.py exemplomojproblem.pddl exemplomojdomain.pddl
 
 print('KEYWORD: ',len(PALAVRAS_RESERVADAS))
-# print(PALAVRAS_RESERVADAS)
+#print(PALAVRAS_RESERVADAS)
 print('IDENTIFIER: ',len(IDENTIFICADOR))
-#print(IDENTIFICADOR)
+print(IDENTIFICADOR)
 print('VARIABLES: ',len(VARIAVEL))
 #print(VARIAVEL)
 print('NUMBER: ',len(NUMERO))
